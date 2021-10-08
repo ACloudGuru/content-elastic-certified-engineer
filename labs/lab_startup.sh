@@ -36,7 +36,14 @@ until [ $(curl -s -o /dev/null -w '%{http_code}' -u elastic:elastic_acg localhos
 # enable kibana dark mode and set default route to the console
 curl -u elastic:elastic_acg -X POST -H "Content-type: application/json" -H 'kbn-xsrf: true' localhost/api/kibana/settings -d '{"changes":{"theme:darkMode":true,"defaultRoute":"/app/dev_tools#/console"}}' &
 
-# load ecommerce data
+# load shakespeare dataset
+wget https://github.com/ACloudGuru/content-elastic-certified-engineer/raw/master/shakespeare.zip
+unzip shakespeare.zip
+curl -u elastic:elastic_acg localhost:9200/shakespeare -XPUT -H 'Content-Type: application/json' -d '{"settings":{"number_of_shards": 1, "number_of_replicas": 0}}'
+curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/shakespeare/_bulk?pretty' --data-binary @shakespeare.json > /dev/null 2>&1
+curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/shakespeare/_refresh'
+
+# load ecommerce dataset
 curl -X POST -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/sample_data/ecommerce
 curl -X POST -u elastic:elastic_acg -H 'Content-Type: application/json' http://localhost:9200/_aliases -d'{  "actions": [ { "add": { "index": "kibana_sample_data_ecommerce", "alias": "ecommerce" } } ]}' &
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/index-pattern/ff959d40-b880-11e8-a6d9-e546fe2bba5f &
@@ -57,7 +64,7 @@ curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_obj
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/visualization/b72dd430-bb4d-11e8-9c84-77068524bcab &
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/graph-workspace/46fa9d30-319c-11ea-bbe4-818d9c786051 &
 
-# load flights data
+# load flights dataset
 curl -X POST -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/sample_data/flights
 curl -X POST -u elastic:elastic_acg -H 'Content-Type: application/json' http://localhost:9200/_aliases -d'{  "actions": [ { "add": { "index": "kibana_sample_data_flights", "alias": "flights" } } ]}' &
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/index-pattern/d3d7af60-4c81-11e8-b3d7-01146121b73d &
@@ -84,7 +91,7 @@ curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_obj
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/visualization/ed78a660-53a0-11e8-acbd-0be0ad9d822b &
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/graph-workspace/5dc018d0-32f8-11ea-bbe4-818d9c786051 &
 
-# load logs data
+# load logs dataset
 curl -X POST -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/sample_data/logs
 curl -X POST -u elastic:elastic_acg -H 'Content-Type: application/json' http://localhost:9200/_aliases -d'{  "actions": [ { "add": { "index": "kibana_sample_data_logs", "alias": "logs" } } ]}' &
 curl -X DELETE -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/saved_objects/index-pattern/90943e30-9a47-11e8-b64d-95841ca0b247 &
