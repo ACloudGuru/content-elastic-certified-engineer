@@ -43,6 +43,13 @@ curl -u elastic:elastic_acg localhost:9200/shakespeare -XPUT -H 'Content-Type: a
 curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/shakespeare/_bulk?pretty' --data-binary @shakespeare.json > /dev/null 2>&1
 curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/shakespeare/_refresh'
 
+# load accounts dataset
+wget https://github.com/ACloudGuru/content-elastic-certified-engineer/raw/master/accounts.zip
+unzip accounts.zip
+curl -u elastic:elastic_acg localhost:9200/accounts -XPUT -H 'Content-Type: application/json' -d '{"settings":{"number_of_shards": 1, "number_of_replicas": 0}}'
+curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/accounts/_bulk?pretty' --data-binary @accounts.json > /dev/null 2>&1
+curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/accounts/_refresh'
+
 # load ecommerce dataset
 curl -X POST -u elastic:elastic_acg -H "kbn-xsrf:true" localhost/api/sample_data/ecommerce
 curl -X POST -u elastic:elastic_acg -H 'Content-Type: application/json' http://localhost:9200/_aliases -d'{  "actions": [ { "add": { "index": "kibana_sample_data_ecommerce", "alias": "ecommerce" } } ]}' &
