@@ -17,10 +17,6 @@ curl -u elastic:temppass -X PUT -H 'Content-Type: application/json' http://local
 curl -u elastic:elastic_acg -X PUT -H 'Content-Type: application/json' http://localhost:9200/_xpack/security/user/kibana_system/_password -d '{"password":"kibana_acg"}'
 curl -u elastic:elastic_acg -X PUT -H 'Content-Type: application/json' http://localhost:9200/_xpack/security/user/beats_system/_password -d '{"password":"beats_acg"}'
 
-# wait for other elasticsearch nodes to start
-until [ $(curl -s -o /dev/null -w '%{http_code}' -u elastic:elastic_acg 10.0.1.102:9200) -eq 200 > /dev/null 2>&1 ]; do sleep 1; done;
-until [ $(curl -s -o /dev/null -w '%{http_code}' -u elastic:elastic_acg 10.0.1.103:9200) -eq 200 > /dev/null 2>&1 ]; do sleep 1; done;
-
 # start kibana
 systemctl start kibana &
 
