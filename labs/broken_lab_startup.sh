@@ -44,14 +44,14 @@ curl -u elastic:elastic_acg -X POST -H "Content-type: application/json" -H 'kbn-
 wget https://github.com/ACloudGuru/content-elastic-certified-engineer/raw/master/shakespeare.zip
 unzip shakespeare.zip
 
-curl -u elastic:elastic_acg localhost:9200/shakespeare -XPUT -H 'Content-Type: application/json' -d '{"settings":{"number_of_shards": 3, "number_of_replicas": 0}}'
+curl -u elastic:elastic_acg localhost:9200/shakespeare -XPUT -H 'Content-Type: application/json' -d '{"settings": {"number_of_shards": 3,"number_of_replicas": 2, "index.routing.allocation.exclude._name": "node-3"}}'
 curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/shakespeare/_bulk?pretty' --data-binary @shakespeare.json > /dev/null 2>&1
 curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/shakespeare/_refresh'
 
 # load and break the accounts dataset
 wget https://github.com/ACloudGuru/content-elastic-certified-engineer/raw/master/accounts.zip
 unzip accounts.zip
-curl -u elastic:elastic_acg localhost:9200/accounts -XPUT -H 'Content-Type: application/json' -d '{"settings": {"number_of_shards": 3,"number_of_replicas": 2, "index.routing.allocation.exclude._name": "node-2"}}'
+curl -u elastic:elastic_acg localhost:9200/accounts -XPUT -H 'Content-Type: application/json' -d '{"settings":{"number_of_shards": 3, "number_of_replicas": 0}}'
 curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/accounts/_bulk?pretty' --data-binary @accounts.json > /dev/null 2>&1
 curl -u elastic:elastic_acg -H 'Content-Type: application/x-ndjson' -XPOST 'localhost:9200/accounts/_refresh'
 
